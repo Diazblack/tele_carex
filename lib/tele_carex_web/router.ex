@@ -24,6 +24,7 @@ defmodule TeleCarexWeb.Router do
     pipe_through :api
 
     resources "/conversations", ConversationController, only: [:index, :show, :create, :delete]
+    get "/messages/:user_id", MessageController, :index
   end
 
   # Other scopes may use custom stacks.

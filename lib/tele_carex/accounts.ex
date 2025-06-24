@@ -22,6 +22,26 @@ defmodule TeleCarex.Accounts do
   end
 
   @doc """
+  Gets a a tuple {:ok, single user} || {:error, :not_found}.
+
+  ## Examples
+
+      iex> get_user(123)
+      {:ok, %User{}}
+
+      iex> get_user(456)
+      ** {:error, :not_found}
+
+  """
+
+  def get_user(id) do
+    case Repo.get(User, id) do
+      %User{} = user -> {:ok, user}
+      _ -> {:error, :not_found}
+    end
+  end
+
+  @doc """
   Gets a single user.
 
   Raises `Ecto.NoResultsError` if the User does not exist.
