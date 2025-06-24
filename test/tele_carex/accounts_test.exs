@@ -21,7 +21,12 @@ defmodule TeleCarex.AccountsTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{username: "some username", available?: true, role: :internal, email: "some email"}
+      valid_attrs = %{
+        username: "some username",
+        available?: true,
+        role: :internal,
+        email: "some email"
+      }
 
       assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
       assert user.username == "some username"
@@ -36,7 +41,13 @@ defmodule TeleCarex.AccountsTest do
 
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
-      update_attrs = %{username: "some updated username", available?: false, role: :public, email: "some updated email"}
+
+      update_attrs = %{
+        username: "some updated username",
+        available?: false,
+        role: :public,
+        email: "some updated email"
+      }
 
       assert {:ok, %User{} = user} = Accounts.update_user(user, update_attrs)
       assert user.username == "some updated username"

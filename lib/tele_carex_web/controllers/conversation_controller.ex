@@ -12,7 +12,8 @@ defmodule TeleCarexWeb.ConversationController do
   end
 
   def create(conn, %{"conversation" => conversation_params}) do
-    with {:ok, %Conversation{} = conversation} <- Conversations.create_conversation(conversation_params) do
+    with {:ok, %Conversation{} = conversation} <-
+           Conversations.create_conversation(conversation_params) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/conversations/#{conversation}")
@@ -28,7 +29,8 @@ defmodule TeleCarexWeb.ConversationController do
   def update(conn, %{"id" => id, "conversation" => conversation_params}) do
     conversation = Conversations.get_conversation!(id)
 
-    with {:ok, %Conversation{} = conversation} <- Conversations.update_conversation(conversation, conversation_params) do
+    with {:ok, %Conversation{} = conversation} <-
+           Conversations.update_conversation(conversation, conversation_params) do
       render(conn, :show, conversation: conversation)
     end
   end
