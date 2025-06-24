@@ -35,3 +35,5 @@ tele_carex-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Remove the VSCode ElixirLS extention files.
+/.elixir_ls
