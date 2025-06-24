@@ -9,6 +9,7 @@ defmodule TeleCarex.Conversations do
   alias TeleCarex.Accounts.User
   alias TeleCarex.Repo
   alias TeleCarex.Conversations.Conversation
+  alias TeleCarex.Conversations.Message
 
   @doc """
   Returns the list of conversations.
@@ -37,7 +38,15 @@ defmodule TeleCarex.Conversations do
       ** (Ecto.NoResultsError)
 
   """
-  def get_conversation!(id), do: Repo.get!(Conversation, id)
+  def get_conversation!(id) do
+    message_q = from(m in Message, order_by: [desc: m.inserted_at])
+
+    from(c in Conversation,
+      where: c.id == ^id,
+      preload: [messages: ^message_q]
+    )
+    |> Repo.one()
+  end
 
   @doc """
   Creates a conversation.
@@ -126,6 +135,25 @@ defmodule TeleCarex.Conversations do
   """
   def list_messages do
     Repo.all(Message)
+  end
+
+  @doc """
+  Returns the list of messages.
+
+  ## Examples
+
+      iex> list_messages(user_id)
+      [%Message{}, ...]
+
+  """
+  def list_messages(user_id) do
+    from(m in Message,
+      join: c in assoc(m, :conversation),
+      where: c.primary_user_id == ^user_id or c.public_user_id == ^user_id,
+      order_by: [asc: m.conversation_id, asc: m.inserted_at],
+      preload: [conversation: c]
+    )
+    |> Repo.all()
   end
 
   @doc """

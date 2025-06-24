@@ -11,7 +11,7 @@ defmodule TeleCarex.ConversationsFixtures do
     {:ok, conversation} =
       attrs
       |> Enum.into(%{
-        title: "some title"
+        title: Faker.Lorem.sentence()
       })
       |> TeleCarex.Conversations.create_conversation()
 
@@ -25,8 +25,8 @@ defmodule TeleCarex.ConversationsFixtures do
     {:ok, message} =
       attrs
       |> Enum.into(%{
-        content: "some content",
-        internal?: true
+        content: Faker.Lorem.sentence(10..15),
+        internal?: false
       })
       |> TeleCarex.Conversations.create_message()
 

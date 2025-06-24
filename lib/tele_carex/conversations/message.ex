@@ -18,7 +18,7 @@ defmodule TeleCarex.Conversations.Message do
   def changeset(message, attrs) do
     message
     |> cast(attrs, [:content, :internal?, :conversation_id, :created_by_id])
-    |> validate_required([:content])
+    |> validate_required([:content, :conversation_id, :created_by_id])
     |> foreign_key_constraint(:conversation_id)
     |> foreign_key_constraint(:created_by_id)
   end

@@ -23,6 +23,8 @@ defmodule TeleCarexWeb.MessageJSON do
     for(message <- messages, do: data(message))
   end
 
+  def relationship(%Ecto.Association.NotLoaded{}), do: nil
+
   defp data(%Message{} = message) do
     Map.take(message, [:id, :content, :internal?, :conversation_id, :created_by_id])
   end
