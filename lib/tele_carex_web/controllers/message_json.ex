@@ -1,5 +1,6 @@
 defmodule TeleCarexWeb.MessageJSON do
   alias TeleCarex.Conversations.Message
+
   @doc """
   Renders a list of messages.
   """
@@ -23,6 +24,6 @@ defmodule TeleCarexWeb.MessageJSON do
   end
 
   defp data(%Message{} = message) do
-    Map.take(message, [:id, :content, :internal?])
+    Map.take(message, [:id, :content, :internal?, :conversation_id, :created_by_id])
   end
 end

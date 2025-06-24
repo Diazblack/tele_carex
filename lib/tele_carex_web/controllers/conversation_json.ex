@@ -15,6 +15,7 @@ defmodule TeleCarexWeb.ConversationJSON do
   def show(%{conversation: conversation}) do
     %{data: data(conversation)}
   end
+
   # def show(%{conversation: conversation, messages: messages}) do
 
   #   %{data: data(conversation, messages)}
@@ -24,10 +25,10 @@ defmodule TeleCarexWeb.ConversationJSON do
     conv |> do_data |> Map.put(:messages, do_messages(messages))
   end
 
-  defp data(%Conversation{} = conv),  do: do_data(conv)
+  defp data(%Conversation{} = conv), do: do_data(conv)
 
   defp do_data(conv) do
-    Map.take(conv, [:id, :title])
+    Map.take(conv, [:id, :title, :public_user_id, :primary_user_id])
   end
 
   defp do_messages(item), do: MessageJSON.relationship(item)

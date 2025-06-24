@@ -37,6 +37,11 @@ defmodule TeleCarex.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_available_internal_user() do
+    from(u in User, where: u.role == :internal and u.available? == true, limit: 1)
+    |> Repo.one()
+  end
+
   @doc """
   Creates a user.
 

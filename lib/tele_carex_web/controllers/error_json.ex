@@ -15,7 +15,16 @@ defmodule TeleCarexWeb.ErrorJSON do
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.json" becomes
   # "Not Found".
-  def render(template, _assigns) do
+  def render(template, assigns) when is_map_key(assigns, :retry) do
+    %{
+      errors: %{
+        detail: Phoenix.Controller.status_message_from_template(template),
+        retry: assigns.retry
+      }
+    }
+  end
+
+  def render(template, _assings) do
     %{errors: %{detail: Phoenix.Controller.status_message_from_template(template)}}
   end
 end

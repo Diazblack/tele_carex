@@ -4,8 +4,10 @@ defmodule TeleCarex.Conversations do
   """
 
   import Ecto.Query, warn: false
-  alias TeleCarex.Repo
 
+  alias TeleCarex.Accounts
+  alias TeleCarex.Accounts.User
+  alias TeleCarex.Repo
   alias TeleCarex.Conversations.Conversation
 
   @doc """
@@ -53,6 +55,15 @@ defmodule TeleCarex.Conversations do
     %Conversation{}
     |> Conversation.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def assign_primary_to_conversation(conversation) do
+    with %User{id: id} <- Accounts.get_available_internal_user(),
+         {:ok, _updated_conv} = tuple <- update_conversation(conversation, %{primary_user_id: id}) do
+      tuple
+    else
+      _any -> {:ok, conversation}
+    end
   end
 
   @doc """

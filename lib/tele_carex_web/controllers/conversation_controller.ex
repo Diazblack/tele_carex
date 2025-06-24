@@ -21,18 +21,18 @@ defmodule TeleCarexWeb.ConversationController do
              "email" => c_params["email"]
            }),
          {:ok, %Conversation{id: c_id} = conversation} <-
-           c_params |> Map.put("public_user_id", u_id ) |> Conversations.create_conversation(),
+           c_params |> Map.put("public_user_id", u_id) |> Conversations.create_conversation(),
          {:ok, %Message{} = message} <-
            Conversations.create_message(%{
              "conversation_id" => c_id,
              "created_by_id" => u_id,
              "content" => c_params["content"],
              "internal?" => false
-           }) do
-
+           }),
+         {:ok, updated_conversation} <- Conversations.assign_primary_to_conversation(conversation) do
       conn
       |> put_status(:created)
-      |> render(:show, conversation: %{conversation | messages: [message]})
+      |> render(:show, conversation: %{updated_conversation | messages: [message]})
     end
   end
 

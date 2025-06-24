@@ -11,6 +11,7 @@ defmodule TeleCarexWeb.FallbackController do
     conn
     |> put_status(:unprocessable_entity)
     |> put_view(json: TeleCarexWeb.ChangesetJSON)
+    |> put_resp_header("retry-after", "false")
     |> render(:error, changeset: changeset)
   end
 
@@ -18,7 +19,8 @@ defmodule TeleCarexWeb.FallbackController do
   def call(conn, {:error, :not_found}) do
     conn
     |> put_status(:not_found)
+    |> put_resp_header("retry-after", "false")
     |> put_view(html: TeleCarexWeb.ErrorHTML, json: TeleCarexWeb.ErrorJSON)
-    |> render(:"404")
+    |> render(:"404", %{retry: false})
   end
 end

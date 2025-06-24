@@ -24,9 +24,9 @@ defmodule TeleCarex.AccountsFixtures do
     {:ok, user} =
       attrs
       |> Enum.into(%{
-        available?: true,
+        available?: false,
         email: unique_user_email(username),
-        role: :internal,
+        role: :public,
         username: username
       })
       |> TeleCarex.Accounts.create_user()

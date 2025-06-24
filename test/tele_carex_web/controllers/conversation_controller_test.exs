@@ -8,10 +8,6 @@ defmodule TeleCarexWeb.ConversationControllerTest do
   alias TeleCarex.Accounts.User
   alias TeleCarex.Repo
 
-  @create_attrs %{
-    title: "some title"
-  }
-
   @invalid_attrs %{title: nil}
 
   setup %{conn: conn} do
@@ -65,9 +61,35 @@ defmodule TeleCarexWeb.ConversationControllerTest do
       assert from(u in User, where: u.username == ^user.username) |> Repo.one()
     end
 
-    test "renders errors when data is invalid", %{conn: conn} do
+    test "creates a new conversation and assigns it to the next available internal user", %{
+      conn: conn
+    } do
+      primary = user_fixture(%{username: "Frank.N.stein", role: :internal, available?: true})
+      user = user_fixture()
+
+      params = %{
+        title: "Food poisoning",
+        username: user.username,
+        email: user.email,
+        content: "Some long text"
+      }
+
+      conn = post(conn, ~p"/api/conversations", conversation: params)
+      conv = json_response(conn, 201)["data"]
+      [message] = conv["messages"]
+
+      assert conv["title"] == params.title
+      assert message["content"] == params.content
+      assert conv["primary_user_id"] == primary.id
+    end
+
+    test "renders errors when data is invalid and signal the client to not retry", %{conn: conn} do
       conn = post(conn, ~p"/api/conversations", conversation: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+      response = json_response(conn, 422)
+      [retry_after] = get_resp_header(conn, "retry-after")
+      assert response["errors"] != %{}
+      assert retry_after == "false"
+      assert response["retry"] == false
     end
   end
 
