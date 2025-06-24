@@ -56,6 +56,29 @@ defmodule TeleCarex.Accounts do
   end
 
   @doc """
+  Finds the user by username of creates a new entry in the database.
+
+  ## Examples
+
+      iex> find_or_create(%{field: value})
+      {:ok, %User{}}
+
+      iex> find_or_create(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def find_or_create(%{"username" => un} = attrs) when not is_nil(un) do
+    case Repo.get_by(User, username: un) do
+      %User{} = user -> {:ok, user}
+      _ -> create_user(attrs)
+    end
+  end
+
+  def find_or_create(attrs) do
+    {:error, User.changeset(%User{}, attrs)}
+  end
+
+  @doc """
   Updates a user.
 
   ## Examples

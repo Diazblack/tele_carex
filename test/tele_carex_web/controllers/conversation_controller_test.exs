@@ -1,9 +1,12 @@
 defmodule TeleCarexWeb.ConversationControllerTest do
   use TeleCarexWeb.ConnCase
 
+  import Ecto.Query
+  import TeleCarex.AccountsFixtures
   import TeleCarex.ConversationsFixtures
 
-  # alias TeleCarex.Conversations.Conversation
+  alias TeleCarex.Accounts.User
+  alias TeleCarex.Repo
 
   @create_attrs %{
     title: "some title"
@@ -24,18 +27,44 @@ defmodule TeleCarexWeb.ConversationControllerTest do
   end
 
   describe "create conversation" do
-    test "renders conversation when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/api/conversations", conversation: @create_attrs)
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+    test "creates new conversation entry and public user when data is valid", %{conn: conn} do
+      params = %{
+        title: "Cold symptoms",
+        username: "ElweVohnEsse",
+        email: "elwe.vohn@esse.com",
+        content: "Some long text"
+      }
 
-      conn = get(conn, ~p"/api/conversations/#{id}")
+      conn = post(conn, ~p"/api/conversations", conversation: params)
+      new_conv = json_response(conn, 201)["data"]
+      [message] = new_conv["messages"]
 
-      assert %{
-               "id" => ^id,
-               "title" => "some title"
-             } = json_response(conn, 200)["data"]
+      assert new_conv["title"] == params.title
+      assert message["content"] == params.content
+      assert %User{} = Repo.get_by(User, username: params.username)
     end
-\
+
+    test "creates new conversation entry when data is valid and the user exists in the DB", %{
+      conn: conn
+    } do
+      user = user_fixture(%{username: "Jed.Y.Knight", role: :public})
+
+      params = %{
+        title: "Stomachache",
+        username: user.username,
+        email: user.email,
+        content: "Some long text"
+      }
+
+      conn = post(conn, ~p"/api/conversations", conversation: params)
+      new_conv = json_response(conn, 201)["data"]
+      [message] = new_conv["messages"]
+
+      assert new_conv["title"] == params.title
+      assert message["content"] == params.content
+      assert from(u in User, where: u.username == ^user.username) |> Repo.one()
+    end
+
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, ~p"/api/conversations", conversation: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}

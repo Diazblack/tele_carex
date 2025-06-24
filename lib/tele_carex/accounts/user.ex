@@ -17,8 +17,7 @@ defmodule TeleCarex.Accounts.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:username, :email, :role, :available?])
-    |> validate_required([:email])
+    |> validate_required([:username, :email])
     |> unique_constraint(:email)
-    |> unique_constraint(:username)
   end
 end

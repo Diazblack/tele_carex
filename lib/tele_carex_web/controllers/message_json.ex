@@ -1,25 +1,28 @@
 defmodule TeleCarexWeb.MessageJSON do
   alias TeleCarex.Conversations.Message
-
   @doc """
   Renders a list of messages.
   """
   def index(%{messages: messages}) do
-    %{data: for(message <- messages, do: data(message))}
+    %{data: relationship(messages)}
   end
 
   @doc """
   Renders a single message.
   """
   def show(%{message: message}) do
-    %{data: data(message)}
+    %{data: relationship(message)}
+  end
+
+  def relationship(%Message{} = message) do
+    data(message)
+  end
+
+  def relationship(messages) when is_list(messages) do
+    for(message <- messages, do: data(message))
   end
 
   defp data(%Message{} = message) do
-    %{
-      id: message.id,
-      content: message.content,
-      internal?: message.internal?
-    }
+    Map.take(message, [:id, :content, :internal?])
   end
 end

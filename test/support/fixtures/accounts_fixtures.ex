@@ -7,7 +7,8 @@ defmodule TeleCarex.AccountsFixtures do
   @doc """
   Generate a unique user email.
   """
-  def unique_user_email, do: "some email#{System.unique_integer([:positive])}"
+  def unique_user_email(str \\ "email"),
+    do: "#{str}#{System.unique_integer([:positive])}@test.com"
 
   @doc """
   Generate a unique user username.
@@ -18,13 +19,15 @@ defmodule TeleCarex.AccountsFixtures do
   Generate a user.
   """
   def user_fixture(attrs \\ %{}) do
+    username = unique_user_username()
+
     {:ok, user} =
       attrs
       |> Enum.into(%{
         available?: true,
-        email: unique_user_email(),
+        email: unique_user_email(username),
         role: :internal,
-        username: unique_user_username()
+        username: username
       })
       |> TeleCarex.Accounts.create_user()
 
