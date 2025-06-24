@@ -37,8 +37,10 @@ defmodule TeleCarexWeb.ConversationController do
   end
 
   def show(conn, %{"id" => id}) do
-    conversation = Conversations.get_conversation!(id)
-    render(conn, :show, conversation: conversation)
+    with {:ok, uuid} <- Ecto.UUID.cast(id) do
+      conversation = Conversations.get_conversation!(uuid)
+      render(conn, :show, conversation: conversation)
+    end
   end
 
   def delete(conn, %{"id" => id}) do

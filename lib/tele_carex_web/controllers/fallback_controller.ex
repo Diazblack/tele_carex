@@ -16,7 +16,7 @@ defmodule TeleCarexWeb.FallbackController do
   end
 
   # This clause is an example of how to handle resources that cannot be found.
-  def call(conn, {:error, :not_found}) do
+  def call(conn, assigns) when assigns in [{:error, :not_found}, :error] do
     conn
     |> put_status(:not_found)
     |> put_resp_header("retry-after", "false")

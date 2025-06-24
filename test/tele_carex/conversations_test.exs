@@ -17,7 +17,7 @@ defmodule TeleCarex.ConversationsTest do
 
     test "get_conversation!/1 returns the conversation with given id" do
       conversation = conversation_fixture()
-      assert Conversations.get_conversation!(conversation.id) == conversation
+      assert Conversations.get_conversation!(conversation.id).id == conversation.id
     end
 
     test "create_conversation/1 with valid data creates a conversation" do
@@ -49,13 +49,13 @@ defmodule TeleCarex.ConversationsTest do
       assert {:error, %Ecto.Changeset{}} =
                Conversations.update_conversation(conversation, @invalid_attrs)
 
-      assert conversation == Conversations.get_conversation!(conversation.id)
+      assert conversation.id == Conversations.get_conversation!(conversation.id).id
     end
 
     test "delete_conversation/1 deletes the conversation" do
       conversation = conversation_fixture()
       assert {:ok, %Conversation{}} = Conversations.delete_conversation(conversation)
-      assert_raise Ecto.NoResultsError, fn -> Conversations.get_conversation!(conversation.id) end
+      assert nil == Conversations.get_conversation!(conversation.id)
     end
 
     test "change_conversation/1 returns a conversation changeset" do

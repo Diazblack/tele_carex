@@ -38,7 +38,15 @@ defmodule TeleCarex.Conversations do
       ** (Ecto.NoResultsError)
 
   """
-  def get_conversation!(id), do: Repo.get!(Conversation, id)
+  def get_conversation!(id) do
+    message_q = from(m in Message, order_by: [desc: m.inserted_at])
+
+    from(c in Conversation,
+      where: c.id == ^id,
+      preload: [messages: ^message_q]
+    )
+    |> Repo.one()
+  end
 
   @doc """
   Creates a conversation.
@@ -129,7 +137,7 @@ defmodule TeleCarex.Conversations do
     Repo.all(Message)
   end
 
-    @doc """
+  @doc """
   Returns the list of messages.
 
   ## Examples
@@ -147,6 +155,7 @@ defmodule TeleCarex.Conversations do
     )
     |> Repo.all()
   end
+
   @doc """
   Gets a single message.
 

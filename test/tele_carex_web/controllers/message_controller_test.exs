@@ -47,7 +47,6 @@ defmodule TeleCarexWeb.MessageControllerTest do
       public_user: pu,
       internal_user: iu
     } do
-
       conn = get(conn, ~p"/api/messages/#{pu}")
       assert json_response(conn, 200)["data"] |> length == 4
 

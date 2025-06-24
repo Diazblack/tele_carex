@@ -11,18 +11,75 @@ defmodule TeleCarexWeb.ConversationControllerTest do
   @invalid_attrs %{title: nil}
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    public_user = user_fixture()
+    internal_user = user_fixture(%{role: :internal, available?: true})
+
+    conv_1 =
+      conversation_fixture(%{public_user_id: public_user.id, primary_user_id: internal_user.id})
+
+    conv_2 =
+      conversation_fixture(%{public_user_id: public_user.id, primary_user_id: internal_user.id})
+
+    msg_1 = message_fixture(%{created_by_id: public_user.id, conversation_id: conv_1.id})
+
+    msg_2 =
+      message_fixture(%{
+        created_by_id: internal_user.id,
+        conversation_id: conv_1.id,
+        internal?: true
+      })
+
+    msg_3 = message_fixture(%{created_by_id: public_user.id, conversation_id: conv_1.id})
+
+    msg_4 =
+      message_fixture(%{
+        created_by_id: internal_user.id,
+        conversation_id: conv_1.id,
+        internal?: true
+      })
+
+    [
+      conn: put_req_header(conn, "accept", "application/json"),
+      public_user: public_user,
+      internal_user: internal_user,
+      conversations: [conv_1, conv_2],
+      messages: [msg_1, msg_2, msg_3, msg_4]
+    ]
   end
 
   describe "index" do
-    @tag :skip
     test "lists all conversations", %{conn: conn} do
       conn = get(conn, ~p"/api/conversations")
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200)["data"] |> length() == 2
     end
   end
 
-  describe "create conversation" do
+  describe "show" do
+    test "returns a conversation entry with all the messages", %{
+      conn: conn,
+      conversations: [conv_1, _conv_2]
+    } do
+      response =
+        conn
+        |> get(~p"/api/conversations/#{conv_1}")
+        |> json_response(200)
+
+      conversation = response["data"]
+      assert conversation["id"] == conv_1.id
+      assert conversation["messages"] |> length() == 4
+    end
+
+    test "returns an error when the entry doesn't exists", %{conn: conn} do
+      response =
+        conn
+        |> get(~p"/api/conversations/ ")
+        |> json_response(404)
+
+      assert response["errors"] == %{"detail" => "Not Found", "retry" => false}
+    end
+  end
+
+  describe "create" do
     test "creates new conversation entry and public user when data is valid", %{conn: conn} do
       params = %{
         title: "Cold symptoms",
@@ -62,9 +119,9 @@ defmodule TeleCarexWeb.ConversationControllerTest do
     end
 
     test "creates a new conversation and assigns it to the next available internal user", %{
-      conn: conn
+      conn: conn,
+      internal_user: internal_user
     } do
-      primary = user_fixture(%{username: "Frank.N.stein", role: :internal, available?: true})
       user = user_fixture()
 
       params = %{
@@ -80,7 +137,7 @@ defmodule TeleCarexWeb.ConversationControllerTest do
 
       assert conv["title"] == params.title
       assert message["content"] == params.content
-      assert conv["primary_user_id"] == primary.id
+      assert conv["primary_user_id"] == internal_user.id
     end
 
     test "renders errors when data is invalid and signal the client to not retry", %{conn: conn} do
