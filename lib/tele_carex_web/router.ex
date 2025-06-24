@@ -20,6 +20,12 @@ defmodule TeleCarexWeb.Router do
     get "/", PageController, :home
   end
 
+   scope "/api", TeleCarexWeb do
+    pipe_through :api
+
+    resources "/conversations", ConversationController, only: [:index, :show, :create, :delete]
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", TeleCarexWeb do
   #   pipe_through :api
