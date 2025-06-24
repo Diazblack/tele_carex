@@ -37,4 +37,3 @@ npm-debug.log
 
 # Remove the VSCode ElixirLS extention files.
 /.elixir_ls
-
