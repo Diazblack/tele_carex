@@ -59,6 +59,54 @@ defmodule TeleCarexWeb.MessageControllerTest do
     end
   end
 
+  describe "create" do
+    test "creates new message in the conversation when right id is passed", %{
+      conn: conn,
+      public_user: pu,
+      conversations: [c1, _c2]
+    } do
+      params = %{
+        content: Faker.Lorem.Shakespeare.as_you_like_it(),
+        created_by_id: pu.id,
+        conversation_id: c1.id
+      }
+
+      json =
+        conn
+        |> post(~p"/api/messages/", message: params)
+        |> json_response(201)
+
+      response = json["data"]
+      assert response["content"] == params.content
+      assert response["created_by_id"] == params.created_by_id
+      assert response["conversation_id"] == params.conversation_id
+      assert response["internal?"] == false
+    end
+
+    test "returns an error when incorrect data is passed", %{
+      conn: conn
+    } do
+      params = %{
+        content: nil,
+        created_by_id: nil,
+        conversation_id: nil
+      }
+
+      json =
+        conn
+        |> post(~p"/api/messages/", message: params)
+        |> json_response(422)
+
+      assert json["errors"] == %{
+               "content" => ["can't be blank"],
+               "conversation_id" => ["can't be blank"],
+               "created_by_id" => ["can't be blank"]
+             }
+
+      assert json["retry"] == false
+    end
+  end
+
   describe "delete message" do
     setup [:create_message]
     @tag :skip
