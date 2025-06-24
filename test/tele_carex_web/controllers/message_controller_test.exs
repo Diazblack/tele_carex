@@ -3,18 +3,6 @@ defmodule TeleCarexWeb.MessageControllerTest do
 
   import TeleCarex.ConversationsFixtures
 
-  alias TeleCarex.Conversations.Message
-
-  @create_attrs %{
-    content: "some content",
-    internal?: true
-  }
-  @update_attrs %{
-    content: "some updated content",
-    internal?: false
-  }
-  @invalid_attrs %{content: nil, internal?: nil}
-
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end

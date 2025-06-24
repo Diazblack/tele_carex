@@ -26,15 +26,6 @@ defmodule TeleCarexWeb.ConversationController do
     render(conn, :show, conversation: conversation)
   end
 
-  def update(conn, %{"id" => id, "conversation" => conversation_params}) do
-    conversation = Conversations.get_conversation!(id)
-
-    with {:ok, %Conversation{} = conversation} <-
-           Conversations.update_conversation(conversation, conversation_params) do
-      render(conn, :show, conversation: conversation)
-    end
-  end
-
   def delete(conn, %{"id" => id}) do
     conversation = Conversations.get_conversation!(id)
 

@@ -11,8 +11,8 @@ defmodule TeleCarexWeb.UserControllerTest do
     end
   end
 
-  defp create_user(_) do
-    user = user_fixture()
-    %{user: user}
-  end
+  # defp create_user(_) do
+  #   user = user_fixture()
+  #   %{user: user}
+  # end
 end
